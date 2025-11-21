@@ -14,7 +14,8 @@ import { useAccount } from "wagmi"
 import { toast } from "sonner"
 import { formatUnits } from "viem"
 
-const HBAR_DECIMALS = 8
+// Hedera uses 8 decimals for contract storage balance (tinybars)
+const HBAR_STORAGE_DECIMALS = 8
 
 type FactionId = "fire" | "water" | "wind"
 
@@ -207,7 +208,7 @@ export function ElementalTriadGame() {
   const votedFaction = getUserVotedFaction()
   const totalYield = roundInfo ? formatUnits(
     roundInfo.totalPowerFire + roundInfo.totalPowerWater + roundInfo.totalPowerWind,
-    HBAR_DECIMALS
+    HBAR_STORAGE_DECIMALS
   ) : "0"
 
   return (
@@ -409,7 +410,7 @@ export function ElementalTriadGame() {
                                 faction.id === "water" ? roundInfo?.totalPowerWater :
                                 roundInfo?.totalPowerWind
 
-                const power = powerRaw ? parseFloat(formatUnits(powerRaw, HBAR_DECIMALS)) : 0
+                const power = powerRaw ? parseFloat(formatUnits(powerRaw, HBAR_STORAGE_DECIMALS)) : 0
 
                 return (
                   <div key={faction.id} className="space-y-2">

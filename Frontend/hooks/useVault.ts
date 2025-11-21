@@ -3,8 +3,9 @@ import { VAULT_ADDRESS, VAULT_ABI } from '@/contracts/Vault'
 import { formatUnits, parseUnits } from 'viem'
 import { useEffect } from 'react'
 
-// Hedera uses 8 decimals for HBAR (not 18 like Ethereum)
-const HBAR_DECIMALS = 8
+// Hedera decimals: 18 for transactions (msg.value), 8 for storage/balance (tinybars)
+const HBAR_TX_DECIMALS = 18  // For deposit/withdraw transactions (msg.value)
+const HBAR_STORAGE_DECIMALS = 8  // For balance storage in contract (tinybars)
 
 export function useVault() {
   const { address } = useAccount()
@@ -104,14 +105,14 @@ export function useVault() {
    */
   const deposit = async (amount: string) => {
     try {
-      const amountInTinybar = parseUnits(amount, HBAR_DECIMALS)
-      console.log('[useVault] Depositing:', amount, 'HBAR =', amountInTinybar.toString(), 'tinybar')
+      const amountInWei = parseUnits(amount, HBAR_TX_DECIMALS)
+      console.log('[useVault] Depositing:', amount, 'HBAR =', amountInWei.toString(), 'wei (18 decimals)')
 
       writeContract({
         address: VAULT_ADDRESS,
         abi: VAULT_ABI,
         functionName: 'deposit',
-        value: amountInTinybar,
+        value: amountInWei,
       })
     } catch (err) {
       console.error('Deposit error:', err)
@@ -124,8 +125,8 @@ export function useVault() {
    */
   const withdraw = async (amount: string) => {
     try {
-      const amountInTinybar = parseUnits(amount, HBAR_DECIMALS)
-      console.log('[useVault] Withdrawing:', amount, 'HBAR =', amountInTinybar.toString(), 'tinybar')
+      const amountInTinybar = parseUnits(amount, HBAR_STORAGE_DECIMALS)
+      console.log('[useVault] Withdrawing:', amount, 'HBAR =', amountInTinybar.toString(), 'tinybar (8 decimals)')
 
       writeContract({
         address: VAULT_ADDRESS,
@@ -142,14 +143,15 @@ export function useVault() {
   return {
     // Data
     balance: balance || 0n,
-    balanceFormatted: balance ? formatUnits(balance, HBAR_DECIMALS) : '0',
+    balanceFormatted: balance ? formatUnits(balance, HBAR_STORAGE_DECIMALS) : '0',
     totalStaked: totalStaked || 0n,
-    totalStakedFormatted: totalStaked ? formatUnits(totalStaked, HBAR_DECIMALS) : '0',
+    totalStakedFormatted: totalStaked ? formatUnits(totalStaked, HBAR_STORAGE_DECIMALS) : '0',
 
     // Functions
     deposit,
     withdraw,
     refetchBalance,
+    reset, // Add reset function to clear transaction state
 
     // Transaction state
     isPending,

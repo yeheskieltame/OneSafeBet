@@ -11,12 +11,14 @@ import { useAccount, useBalance } from "wagmi"
 import { toast } from "sonner"
 import { formatUnits } from "viem"
 
-// Hedera uses 8 decimals for HBAR
-const HBAR_DECIMALS = 8
+// Hedera decimals: 18 for wallet (chain config), 8 for contract storage
+const HBAR_WALLET_DECIMALS = 18  // Wallet balance from chain
+const HBAR_STORAGE_DECIMALS = 8  // Contract storage balance (tinybars)
 
 export function VaultCard() {
   const [depositAmount, setDepositAmount] = useState("")
   const [withdrawAmount, setWithdrawAmount] = useState("")
+  const [lastProcessedHash, setLastProcessedHash] = useState<string | null>(null)
 
   const { address, isConnected } = useAccount()
   const {
@@ -41,7 +43,12 @@ export function VaultCard() {
 
   // Handle transaction confirmation
   useEffect(() => {
-    if (isConfirmed && hash) {
+    if (isConfirmed && hash && hash !== lastProcessedHash) {
+      // Dismiss any loading toasts
+      toast.dismiss("deposit-tx")
+      toast.dismiss("withdraw-tx")
+
+      // Show success toast
       toast.success("Transaction Successful!", {
         description: `View on HashScan`,
         action: {
@@ -50,6 +57,9 @@ export function VaultCard() {
         },
         duration: 5000,
       })
+
+      // Mark this hash as processed
+      setLastProcessedHash(hash)
 
       // Force multiple refetches to ensure balance updates
       const forceRefresh = async () => {
@@ -73,11 +83,15 @@ export function VaultCard() {
       setDepositAmount("")
       setWithdrawAmount("")
     }
-  }, [isConfirmed, hash, refetchBalance])
+  }, [isConfirmed, hash, lastProcessedHash, refetchBalance])
 
   // Handle errors
   useEffect(() => {
     if (error) {
+      // Dismiss loading toasts
+      toast.dismiss("deposit-tx")
+      toast.dismiss("withdraw-tx")
+
       toast.error("Transaction Failed", {
         description: error.message || "Please try again",
         duration: 5000,
@@ -101,7 +115,7 @@ export function VaultCard() {
       return
     }
 
-    const walletBalance = walletBalanceData ? parseFloat(formatUnits(walletBalanceData.value, HBAR_DECIMALS)) : 0
+    const walletBalance = walletBalanceData ? parseFloat(formatUnits(walletBalanceData.value, HBAR_WALLET_DECIMALS)) : 0
     if (val > walletBalance) {
       toast.error("Insufficient Balance", {
         description: "You don't have enough HBAR in your wallet"
@@ -112,9 +126,8 @@ export function VaultCard() {
     try {
       toast.loading("Preparing transaction...", { id: "deposit-tx" })
       await deposit(depositAmount)
-      toast.dismiss("deposit-tx")
+      // Don't dismiss here - will be dismissed by useEffect on success/error
     } catch (err) {
-      toast.dismiss("deposit-tx")
       console.error("Deposit error:", err)
     }
   }
@@ -146,14 +159,13 @@ export function VaultCard() {
     try {
       toast.loading("Preparing transaction...", { id: "withdraw-tx" })
       await withdraw(withdrawAmount)
-      toast.dismiss("withdraw-tx")
+      // Don't dismiss here - will be dismissed by useEffect on success/error
     } catch (err) {
-      toast.dismiss("withdraw-tx")
       console.error("Withdraw error:", err)
     }
   }
 
-  const walletBalance = walletBalanceData ? formatUnits(walletBalanceData.value, HBAR_DECIMALS) : "0"
+  const walletBalance = walletBalanceData ? formatUnits(walletBalanceData.value, HBAR_WALLET_DECIMALS) : "0"
   const walletBalanceNumber = parseFloat(walletBalance)
 
   // Debug wallet balance
@@ -201,7 +213,7 @@ export function VaultCard() {
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Contract: {vaultBalance?.toString().slice(0, 20)}...
+                  Raw Balance: {vaultBalance?.toString()} tinybar (8 decimals)
                 </p>
               </div>
 
