@@ -1,0 +1,190 @@
+# ============================================
+# OneSafeBet - Root .gitignore
+# ============================================
+
+# =====================================
+# macOS System Files
+# =====================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# =====================================
+# Environment Variables & Secrets
+# =====================================
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.key
+*.pem
+secrets/
+credentials.json
+
+# =====================================
+# Frontend (Next.js 16 / Node.js)
+# =====================================
+
+# Dependencies
+Frontend/node_modules/
+Frontend/.pnp
+Frontend/.pnp.js
+
+# Next.js Build Output
+Frontend/.next/
+Frontend/out/
+
+# Production Build
+Frontend/build/
+Frontend/dist/
+
+# Debug & Logs
+Frontend/npm-debug.log*
+Frontend/yarn-debug.log*
+Frontend/yarn-error.log*
+Frontend/pnpm-debug.log*
+Frontend/lerna-debug.log*
+Frontend/.turbo
+Frontend/*.log
+
+# Testing
+Frontend/coverage/
+Frontend/.nyc_output/
+
+# TypeScript
+Frontend/*.tsbuildinfo
+Frontend/next-env.d.ts
+
+# Vercel
+Frontend/.vercel
+
+# Editor directories
+Frontend/.vscode/*
+!Frontend/.vscode/extensions.json
+Frontend/.idea/
+Frontend/*.swp
+Frontend/*.swo
+Frontend/*~
+Frontend/.project
+Frontend/.classpath
+Frontend/.c9/
+Frontend/*.launch
+Frontend/.settings/
+Frontend/*.sublime-workspace
+
+# =====================================
+# Smart Contracts (Foundry/Solidity)
+# =====================================
+
+# Foundry Compiler Output
+smartContract/cache/
+smartContract/out/
+smartContract/broadcast/*/31337/
+smartContract/broadcast/**/dry-run/
+
+# Foundry docs
+smartContract/docs/
+
+# Foundry lib (except forge-std if committed)
+smartContract/lib/*
+!smartContract/lib/forge-std/
+
+# Artifacts
+smartContract/artifacts/
+smartContract/typechain/
+smartContract/typechain-types/
+
+# Hardhat (if used)
+smartContract/cache_hardhat/
+smartContract/artifacts_hardhat/
+
+# Coverage reports
+smartContract/coverage/
+smartContract/coverage.json
+smartContract/lcov.info
+
+# Gas reports
+smartContract/.gas-snapshot
+
+# Logs
+smartContract/*.log
+
+# Editor
+smartContract/.vscode/*
+!smartContract/.vscode/extensions.json
+smartContract/.idea/
+
+# =====================================
+# IDE & Editor Files
+# =====================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# =====================================
+# OS & Misc
+# =====================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# =====================================
+# Temporary & Cache
+# =====================================
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# =====================================
+# Project Specific
+# =====================================
+# Keep documentation at root
+!CLAUDE.md
+!README.md
+!petunjuk.md
+!*.md
+
+# Lock files - keep package manager lock files
+!Frontend/pnpm-lock.yaml
+!Frontend/package-lock.json
+!Frontend/yarn.lock
+!smartContract/foundry.lock
