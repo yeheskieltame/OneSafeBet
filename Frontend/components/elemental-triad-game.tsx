@@ -163,11 +163,8 @@ export function ElementalTriadGame() {
     if (!faction) return
 
     try {
-      toast.loading("Preparing transaction...", { id: "vote-tx" })
       await vote(faction.contractId)
-      toast.dismiss("vote-tx")
     } catch (err) {
-      toast.dismiss("vote-tx")
       console.error("Vote error:", err)
     }
   }
@@ -181,11 +178,8 @@ export function ElementalTriadGame() {
     }
 
     try {
-      toast.loading("Claiming reward...", { id: "claim-tx" })
       await claimReward(currentRoundId)
-      toast.dismiss("claim-tx")
     } catch (err) {
-      toast.dismiss("claim-tx")
       console.error("Claim error:", err)
     }
   }

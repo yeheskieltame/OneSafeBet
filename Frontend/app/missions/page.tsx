@@ -1,73 +1,78 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Trophy, Target, Zap, CheckCircle2, Lock, Star } from "lucide-react"
+import { Trophy, Target, Zap, CheckCircle2, Star, Award } from "lucide-react"
 import { motion } from "framer-motion"
 import { FloatingNav } from "@/components/floating-nav"
+import { useQuestManager } from "@/hooks/useQuestManager"
+import { useVault } from "@/hooks/useVault"
 
 export default function MissionsPage() {
-  const [xp, setXp] = useState(1250)
+  const { totalWins, winStreak, hasNoviceBadge, hasLoyalistBadge, hasWhaleBadge, isStatsLoading } = useQuestManager()
+  const { balance, balanceFormatted } = useVault()
+
+  // Calculate XP based on total wins (100 XP per win)
+  const xp = totalWins * 100
   const level = Math.floor(xp / 1000) + 1
   const nextLevelXp = level * 1000
   const progress = ((xp % 1000) / 1000) * 100
 
-  const dailyMissions = [
+  // Convert balance to HBAR (8 decimals)
+  const balanceInHbar = parseFloat(balanceFormatted)
+
+  // Quests based on smart contract conditions
+  const achievementBadges = [
     {
       id: 1,
-      title: "First Blood",
-      description: "Win your first prediction of the day",
-      reward: "50 BP",
-      progress: 1,
+      title: "First Victory",
+      description: "Win your first game",
+      reward: "Novice Badge",
+      progress: totalWins >= 1 ? 1 : totalWins,
       total: 1,
-      completed: true,
-      icon: <Target className="w-5 h-5 text-red-400" />,
+      completed: hasNoviceBadge,
+      icon: <Target className="w-5 h-5 text-green-400" />,
+      badgeType: "novice",
     },
     {
       id: 2,
-      title: "Power Up",
-      description: "Deposit 100 HBAR into the Vault",
-      reward: "100 XP",
-      progress: 0,
-      total: 100,
-      completed: false,
-      icon: <Zap className="w-5 h-5 text-yellow-400" />,
+      title: "Win Streak Master",
+      description: "Achieve a 3-game win streak",
+      reward: "Loyalist Badge",
+      progress: winStreak,
+      total: 3,
+      completed: hasLoyalistBadge,
+      icon: <Trophy className="w-5 h-5 text-purple-400" />,
+      badgeType: "loyalist",
     },
     {
       id: 3,
-      title: "Strategist",
-      description: "Participate in Elemental Triad",
-      reward: "75 BP",
-      progress: 0,
-      total: 1,
-      completed: false,
-      icon: <Trophy className="w-5 h-5 text-purple-400" />,
+      title: "Whale Status",
+      description: "Deposit 10,000 HBAR into the Vault",
+      reward: "Whale Badge",
+      progress: balanceInHbar,
+      total: 10000,
+      completed: hasWhaleBadge,
+      icon: <Star className="w-5 h-5 text-gold-400" />,
+      badgeType: "whale",
     },
   ]
 
-  const weeklyMissions = [
+  const statCards = [
     {
       id: 4,
-      title: "High Roller",
-      description: "Accumulate 10,000 BP in winnings",
-      reward: "Badge + 500 XP",
-      progress: 4500,
-      total: 10000,
-      completed: false,
-      icon: <Star className="w-5 h-5 text-gold-400" />,
+      title: "Total Wins",
+      description: "Your all-time victories",
+      value: totalWins.toString(),
+      icon: <Award className="w-5 h-5 text-blue-400" />,
     },
     {
       id: 5,
-      title: "Loyal Guardian",
-      description: "Keep funds in Vault for 7 days",
-      reward: "Mystery Box",
-      progress: 3,
-      total: 7,
-      completed: false,
-      icon: <Lock className="w-5 h-5 text-green-400" />,
+      title: "Current Streak",
+      description: "Consecutive wins",
+      value: winStreak.toString(),
+      icon: <Zap className="w-5 h-5 text-yellow-400" />,
     },
   ]
 
@@ -113,22 +118,26 @@ export default function MissionsPage() {
         </div>
 
         {/* Missions Tabs */}
-        <Tabs defaultValue="daily" className="w-full">
+        <Tabs defaultValue="achievements" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-2 mb-8 bg-white/5 border border-white/10">
-            <TabsTrigger value="daily">Daily Quests</TabsTrigger>
-            <TabsTrigger value="weekly">Weekly Challenges</TabsTrigger>
+            <TabsTrigger value="achievements">Achievement Badges</TabsTrigger>
+            <TabsTrigger value="stats">Your Stats</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="daily" className="space-y-4">
-            {dailyMissions.map((mission) => (
-              <MissionCard key={mission.id} mission={mission} />
-            ))}
+          <TabsContent value="achievements" className="space-y-4">
+            {isStatsLoading ? (
+              <div className="text-center text-gray-400 py-8">Loading quests...</div>
+            ) : (
+              achievementBadges.map((mission) => <MissionCard key={mission.id} mission={mission} />)
+            )}
           </TabsContent>
 
-          <TabsContent value="weekly" className="space-y-4">
-            {weeklyMissions.map((mission) => (
-              <MissionCard key={mission.id} mission={mission} />
-            ))}
+          <TabsContent value="stats" className="space-y-4">
+            {isStatsLoading ? (
+              <div className="text-center text-gray-400 py-8">Loading stats...</div>
+            ) : (
+              statCards.map((stat) => <StatCard key={stat.id} stat={stat} />)
+            )}
           </TabsContent>
         </Tabs>
       </div>
@@ -152,13 +161,13 @@ function MissionCard({ mission }: { mission: any }) {
 
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <h3 className={`font-bold text-lg ${mission.completed ? "text-gray-400 line-through" : "text-white"}`}>
+            <h3 className={`font-bold text-lg ${mission.completed ? "text-green-400" : "text-white"}`}>
               {mission.title}
             </h3>
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-yellow-400">{mission.reward}</span>
               {mission.completed && (
-                <Badge className="bg-green-500/20 text-green-400 hover:bg-green-500/30 border-none">Claimed</Badge>
+                <Badge className="bg-green-500/20 text-green-400 hover:bg-green-500/30 border-none">Earned</Badge>
               )}
             </div>
           </div>
@@ -170,19 +179,51 @@ function MissionCard({ mission }: { mission: any }) {
               <div className="flex justify-between text-xs text-gray-500">
                 <span>Progress</span>
                 <span>
-                  {mission.progress} / {mission.total}
+                  {typeof mission.progress === "number" && mission.progress > mission.total
+                    ? mission.total
+                    : mission.progress.toFixed(2)}{" "}
+                  / {mission.total}
                 </span>
               </div>
-              <Progress value={(mission.progress / mission.total) * 100} className="h-1.5 bg-white/5" />
+              <Progress
+                value={Math.min((mission.progress / mission.total) * 100, 100)}
+                className="h-1.5 bg-white/5"
+              />
+            </div>
+          )}
+
+          {mission.completed && (
+            <div className="text-green-400 text-sm font-medium flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              Badge earned on-chain
             </div>
           )}
         </div>
+      </div>
+    </motion.div>
+  )
+}
 
-        {!mission.completed && mission.progress >= mission.total && (
-          <Button className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold hover:opacity-90 shadow-[0_0_20px_rgba(250,204,21,0.3)]">
-            Claim
-          </Button>
-        )}
+function StatCard({ stat }: { stat: any }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative overflow-hidden rounded-xl border border-white/10 bg-card/20 p-6 backdrop-blur-sm transition-all hover:border-white/20"
+    >
+      <div className="flex items-center gap-4">
+        <div className="p-3 rounded-full bg-white/5">{stat.icon}</div>
+
+        <div className="flex-1">
+          <h3 className="font-bold text-lg text-white mb-1">{stat.title}</h3>
+          <p className="text-gray-400 text-sm">{stat.description}</p>
+        </div>
+
+        <div className="text-right">
+          <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+            {stat.value}
+          </div>
+        </div>
       </div>
     </motion.div>
   )
