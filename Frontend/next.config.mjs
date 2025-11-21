@@ -8,7 +8,10 @@ const nextConfig = {
   },
   // Exclude problematic server packages from bundling
   serverExternalPackages: ['pino', 'pino-pretty', 'thread-stream'],
+
   // Configure webpack to handle node modules properly
+  // Note: Using webpack instead of Turbopack due to Turbopack limitations
+  // with handling test files and non-source files in dependencies
   webpack: (config, { webpack }) => {
     // Use IgnorePlugin to exclude test directories from resolution
     config.plugins.push(

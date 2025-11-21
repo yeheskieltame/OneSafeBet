@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="Frontend/public/onesafebet.png" alt="OneSafeBet Logo" width="200"/>
+</div>
+
 # OneSafeBet: A Fair No-Loss Gaming Platform
 
 ## The Problem
