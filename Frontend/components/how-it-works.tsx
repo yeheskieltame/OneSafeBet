@@ -7,7 +7,7 @@ const steps = [
   {
     icon: Coins,
     title: 'Stake Your Tokens',
-    description: 'Deposit your $ONE tokens into the prize pool. Your principal is always safe and withdrawable.',
+    description: 'Deposit your $HBAR tokens into the prize pool. Your principal is always safe and withdrawable.',
     color: 'text-chart-2'
   },
   {

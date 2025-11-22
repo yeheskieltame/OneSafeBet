@@ -37,7 +37,7 @@ export function PrizeOrb() {
             ${prizeAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h2>
           <p className="text-sm text-muted-foreground">
-            ≈ {(prizeAmount * 0.025).toLocaleString()} $ONE
+            ≈ {(prizeAmount * 0.025).toLocaleString()} $HBAR
           </p>
         </div>
 

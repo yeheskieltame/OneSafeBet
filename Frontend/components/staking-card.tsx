@@ -25,7 +25,7 @@ export function StakingCard() {
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-bold text-foreground">Enter the Pool</h3>
         <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/30">
-          <span className="text-sm font-medium text-primary">Your Balance: 50,000 $ONE</span>
+          <span className="text-sm font-medium text-primary">Your Balance: 50,000 $HBAR</span>
         </div>
       </div>
 
@@ -36,7 +36,7 @@ export function StakingCard() {
             <Lock className="w-4 h-4" />
             Your Staked Amount
           </p>
-          <p className="text-2xl font-bold text-foreground">1,500 $ONE</p>
+          <p className="text-2xl font-bold text-foreground">1,500 $HBAR</p>
           <p className="text-xs text-muted-foreground">≈ $60,000.00</p>
         </div>
         <div className="space-y-1">
@@ -51,7 +51,7 @@ export function StakingCard() {
 
       {/* Stake More */}
       <div className="space-y-4">
-        <label className="text-sm font-medium text-foreground">Stake More $ONE</label>
+        <label className="text-sm font-medium text-foreground">Stake More $HBAR</label>
         <div className="relative">
           <Input
             type="number"
@@ -61,7 +61,7 @@ export function StakingCard() {
             className="h-14 text-lg pr-20 bg-secondary/30 border-border"
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
-            $ONE
+            $HBAR
           </span>
         </div>
 
